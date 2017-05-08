@@ -1,0 +1,15 @@
+{
+  "name": "wp-style",
+  "version": "1.0.1",
+  "description": "Overwrite WordPress theme style.css files with corresponding information from the theme's package.json file.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "WordPress",
+    "style.css"
+  ],
+  "author": "Iavor Dekov",
+  "license": "ISC"
+}
