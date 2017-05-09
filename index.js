@@ -21,7 +21,35 @@ function patchNPMversion(successCallback) {
   });
 }
 
-function copyPackageJSONDataToStyleCSS(newVersion) {
+function updateStyleCSSWithPackageJSONData(newVersion) {
+  const packageData = generateStyleCSSData(newVersion);
+
+  fs.readFile('style.css', 'utf8', function(err, data) {
+    if (err) {
+      return console.log(err);
+    }
+
+    var updatedStyleCSSData = data.replace(/^\/\*[\s\S]*?\*\//g, packageData);
+
+    fs.writeFile('style.css', updatedStyleCSSData, 'utf8', function(err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
+  });
+}
+
+function createStyleCSSWithPackageJSONData(newVersion) {
+  const packageData = generateStyleCSSData(newVersion);
+
+  fs.writeFile('style.css', packageData, error => {
+    if (error) {
+      return console.error(error);
+    }
+  });
+}
+
+function generateStyleCSSData(newVersion) {
   const themeName = packageJSON.name
     .replace('-', ' ')
     .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
@@ -34,11 +62,15 @@ function copyPackageJSONDataToStyleCSS(newVersion) {
 * Version: ${newVersion}
 */`;
 
-  fs.writeFile('style.css', styleData, error => {
-    if (error) {
-      return console.error(error);
-    }
-  });
+  return styleData;
 }
 
-patchNPMversion(copyPackageJSONDataToStyleCSS);
+function createOrUpdateStyleCSS(newVersion) {
+  if (fs.existsSync('style.css')) {
+    updateStyleCSSWithPackageJSONData(newVersion);
+  } else {
+    createStyleCSSWithPackageJSONData(newVersion);
+  }
+}
+
+patchNPMversion(createOrUpdateStyleCSS);
