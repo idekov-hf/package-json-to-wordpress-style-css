@@ -3,9 +3,6 @@
   "version": "1.0.3",
   "description": "Overwrite WordPress theme style.css files with corresponding information from the theme's package.json file.",
   "main": "index.js",
-  "scripts": {
-    "patch": "npm version patch"
-  },
   "keywords": [
     "WordPress",
     "style.css"
