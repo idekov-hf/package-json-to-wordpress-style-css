@@ -4,7 +4,7 @@ const fs = require('fs');
 
 function patchNPMversion(successCallback) {
   const commandOptions = {
-    cwd: process.env.PWD, // Sets the current working directory to the location
+    cwd: process.env.PWD // Sets the current working directory to the location
     // from which the script was run.
   };
 
@@ -15,24 +15,26 @@ function patchNPMversion(successCallback) {
 
     console.log(stdout);
 
-    successCallback();
+    const newVersion = stdout.trim().replace('v', '');
+
+    successCallback(newVersion);
   });
 }
 
-function copyPackageJSONDataToStyleCSS() {
+function copyPackageJSONDataToStyleCSS(newVersion) {
   const themeName = packageJSON.name
     .replace('-', ' ')
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase());
+    .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 
   const styleData = `/*
 * Theme Name: ${themeName}
 * Text Domain: ${packageJSON.name}
 * Description: ${packageJSON.description}
 * Author: ${packageJSON.author}
-* Version: ${packageJSON.version}
+* Version: ${newVersion}
 */`;
 
-  fs.writeFile('style.css', styleData, (error) => {
+  fs.writeFile('style.css', styleData, error => {
     if (error) {
       return console.error(error);
     }
