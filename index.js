@@ -1,6 +1,7 @@
 const exec = require('child_process').exec;
-const packageJSON = require('../../package.json');
 const fs = require('fs');
+const path = require('path');
+const packageJSON = require(path.resolve(process.env.PWD, 'package.json'));
 
 function patchNPMversion(successCallback) {
   const commandOptions = {
@@ -13,8 +14,6 @@ function patchNPMversion(successCallback) {
       throw new Error(`exec error: ${error}`);
     }
 
-    console.log(stdout);
-
     const newVersion = stdout.trim().replace('v', '');
 
     successCallback(newVersion);
@@ -24,19 +23,46 @@ function patchNPMversion(successCallback) {
 function updateStyleCSSWithPackageJSONData(newVersion) {
   const packageData = generateStyleCSSData(newVersion);
 
-  fs.readFile('style.css', 'utf8', function(err, data) {
+  fs.readFile('style.css', 'utf8', function(err, styleData) {
     if (err) {
       return console.log(err);
     }
 
-    var updatedStyleCSSData = data.replace(/^\/\*[\s\S]*?\*\//g, packageData);
+    let updatedStyleCSSData = getUpdatedStyleCSSData(styleData, packageData);
 
     fs.writeFile('style.css', updatedStyleCSSData, 'utf8', function(err) {
       if (err) {
         return console.log(err);
       }
+      console.log(
+        `style.css version successfully updated from ${packageJSON.version} to ${newVersion}`
+      );
     });
   });
+}
+
+function getUpdatedStyleCSSData(styleData, packageData) {
+  let updatedStyleCSSData = '';
+  /*
+   * Regular expression for matching the header section
+   * of a WordPress Theme main style.css file.
+   */
+  const styleCSSHeaderRegexp = /\/\*[\s\S]*?Theme[\s\S]*?\*\//;
+
+  /*
+   * If no header comment is found in style.css, generate the
+   * header and append the contents of the style.css file to it.
+   * If a header comment is found, replace it with the new
+   * data extracted from the package.json file (leaving intact
+   * any other content that exists in the style.css file).
+	 */
+  if (!styleData.match(styleCSSHeaderRegexp)) {
+    updatedStyleCSSData = packageData + styleData;
+  } else {
+    updatedStyleCSSData = styleData.replace(styleCSSHeaderRegexp, packageData);
+  }
+
+  return updatedStyleCSSData;
 }
 
 function createStyleCSSWithPackageJSONData(newVersion) {
