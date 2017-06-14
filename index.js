@@ -77,7 +77,7 @@ function createStyleCSSWithPackageJSONData(newVersion) {
 
 function generateStyleCSSData(newVersion) {
   const themeName = packageJSON.name
-    .replace('-', ' ')
+    .replace(/-/g, ' ')
     .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 
   const styleData = `/*
