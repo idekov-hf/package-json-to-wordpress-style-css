@@ -1,5 +1,5 @@
 # package-json-to-wordpress-style-css
-A Node module that creates/overwrites the header of the `style.css` file in a WordPress theme with corresponding information pulled from the theme's `project.json` file.
+A Node module that creates/overwrites the header of the `style.css` file in a WordPress theme with corresponding information pulled from the theme's `package.json` file.
 
 A header comment with the following format is created:
 
